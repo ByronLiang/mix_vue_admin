@@ -10,6 +10,15 @@
             <b-link href="#"
                     class="card-link">Another link</b-link>
             <b-alert show>Default Alert</b-alert>
+            <b-button variant="primary" @click="addItem()">Add</b-button>
+        </b-card>
+        <b-card title="Activity"
+                sub-title="Type Show">
+            <b-table :items="data" :fields="fields">
+                <template slot="img_url" slot-scope="{$index, item}">
+                    <img :src="item.img_url" height="50"/>
+                </template>
+            </b-table>
         </b-card>
     </div>
 </template>
@@ -20,6 +29,11 @@ export default {
     },
     data() {
         return {
+            fields: [
+                { key: 'name', label: '分类名称' },
+                { key: 'img_url', label: '图片' },
+                { key: 'number', label: '排序'},
+            ],
             data: [],
         };
     },
@@ -34,6 +48,9 @@ export default {
                 this.data = res;
                 console.log(this.data);
             });
+        },
+        addItem() {
+            console.log('aa');
         },
     },
 };
