@@ -19,13 +19,12 @@
                     </el-dropdown-menu>
                 </el-dropdown>
             </el-header>
-
             <el-main>
                 <!--<breadcrumb></breadcrumb>-->
                 <router-view></router-view>
             </el-main>
 
-            <el-footer height="auto">Copyright © 2018 Ganguo</el-footer>
+            <!-- <el-footer height="auto">Copyright © 2018</el-footer> -->
         </el-container>
     </el-container>
 </template>
