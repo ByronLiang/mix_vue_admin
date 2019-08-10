@@ -6,25 +6,41 @@
                 <el-button type="text" @click="isCollapse = !isCollapse">
                     <i class="fa " :class="isCollapse ? 'fa-indent' : 'fa-outdent'" aria-hidden="true"></i>
                 </el-button>
-                <el-dropdown trigger="click" v-if="my">
-                    <div class="click-area flex ">
-                        <!--<div><img class="avatar" src="https://picsum.photos/50/?random"></div>-->
-                        <div class="flex flex-col justify-around">
-                            <div>{{ my.account || 'admin' }}</div>
+                <div class="flex">
+                    <!-- <el-dropdown trigger="click" class="locale-changer mr-10">
+                        <div>{{ $i18n.locale }}</div>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item
+                                v-for="(lang, i) in langs"
+                                :key="`Lang${i}`"
+                                @click.native="() => {$i18n.locale = lang}"
+                            >
+                                {{ lang }}
+                            </el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown> -->
+                    <!-- {{$t('message.hello')}} -->
+                    <el-dropdown trigger="click" v-if="my">
+                        <div class="click-area flex ">
+                            <!--<div><img class="avatar" src="https://picsum.photos/50/?random"></div>-->
+                            <div class="flex flex-col justify-around">
+                                <div>{{ my.account || 'admin' }}</div>
+                            </div>
                         </div>
-                    </div>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item @click.native="$router.push('/my-profile')">个人信息</el-dropdown-item>
-                        <el-dropdown-item @click.native="logout">注销</el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item @click.native="$router.push('/my-profile')">个人信息</el-dropdown-item>
+                            <el-dropdown-item @click.native="logout">注销</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </div>
             </el-header>
+
             <el-main>
                 <!--<breadcrumb></breadcrumb>-->
                 <router-view></router-view>
             </el-main>
 
-            <!-- <el-footer height="auto">Copyright © 2018</el-footer> -->
+            <el-footer height="auto">Copyright © 2018 Ganguo</el-footer>
         </el-container>
     </el-container>
 </template>
@@ -57,6 +73,7 @@ export default {
             activeMenu: '',
             defaultOpeneds: [],
             isCollapse: false,
+            langs: ['Ja', 'En'],
         };
     },
     computed: {
@@ -67,7 +84,7 @@ export default {
     methods: {
         logout() {
             const loadingInstance = $ele.$loading();
-            API.get('my/logout').then(() => {
+            API.post('auth/logout').then(() => {
                 loadingInstance.close();
                 this.$router.push('/login');
             });
@@ -101,7 +118,7 @@ export default {
                 top: 0;
                 z-index: 1;
 
-                .hamburger{
+                .hamburger {
                     margin-left: -20px;
                 }
 

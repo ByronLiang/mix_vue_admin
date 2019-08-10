@@ -54,7 +54,7 @@ export default {
             this.$refs.form.validate((valid) => {
                 if (!valid) return;
                 this.isBtnLoading = true;
-                API.put('my/profile', this.form)
+                API.post('my/profile', this.form)
                     .then(() => this.$store.dispatch('getMy'))
                     .finally(() => (this.isBtnLoading = false));
             });

@@ -23,10 +23,10 @@ export default {
         return {
             is_focus: false,
             dcf: {
-                relative_urls: false,
-                convert_urls: false,
+                toolbar: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+                fontsize_formats: '8pt 10pt 12pt 14pt 18pt 24pt 36pt',
                 autoresize_bottom_margin: 1,
-                plugins: 'fullscreen preview print autoresize image media link table code help',
+                plugins: 'fullscreen preview print textcolor autoresize image media link table code help',
                 images_upload_handler: this.imagesUploadHandler,
                 init_instance_callback: this.initInstanceCallback,
             },

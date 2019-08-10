@@ -2,26 +2,42 @@
     <div class="login-page">
         <el-card>
             <div slot="header" class="text-center text-xl">{{ $store.state.site_title }}</div>
-            <el-form :model="form" :rules="rules" ref="form" label-position="top" @keyup.enter.native="login">
+            <el-form
+              :model="form"
+              :rules="rules"
+              ref="form"
+              label-position="top"
+              class="login-card-form"
+              @submit.native.prevent="login">
                 <el-form-item prop="account">
-                    <el-input :autofocus="true" placeholder="请输入账号" v-model="form.account"></el-input>
+                    <el-input
+                      :autofocus="true"
+                      placeholder="请输入账号"
+                      v-model="form.account"/>
                 </el-form-item>
                 <el-form-item prop="password">
-                    <el-input placeholder="请输入密码" type="password" v-model="form.password"></el-input>
+                    <el-input
+                      placeholder="请输入密码"
+                      type="password"
+                      v-model="form.password"/>
                 </el-form-item>
-                <el-form-item v-show="captcha_url" prop="captcha">
-                    <div class="flex">
-                        <el-input class="mr-1" placeholder="输入验证码" v-model="form.captcha"></el-input>
-                        <a href="javascript:void(0);" @click="refreshCaptchaUrl">
-                            <img :src="captcha_url" />
-                        </a>
-                    </div>
-                </el-form-item>
-                <el-form-item>
-                    <el-switch v-model="form.remember" active-text="下次免登录"></el-switch>
-                </el-form-item>
-                <el-form-item class="center">
-                    <el-button type="primary" @click="login" :loading="isBtnLoading">{{btnText}}</el-button>
+                <div class="flex">
+                    <el-form-item class="login-card-code" prop="code">
+                        <el-input
+                            placeholder="请输入图形验证码"
+                            type="text"
+                            v-model="form.code"
+                        ></el-input>
+                    </el-form-item>
+                    <img :src="codeImg" class="login-code-image" @click="refreshCodeImg()">
+                </div>
+                <el-form-item class="login-card-btn center">
+                    <el-button
+                      type="primary"
+                      native-type="submit"
+                      :loading="isBtnLoading">
+                      {{btnText}}
+                    </el-button>
                 </el-form-item>
             </el-form>
         </el-card>
@@ -43,20 +59,21 @@ export default {
     props: [],
     data() {
         return {
+            codeImg: '',
             form: {
                 account: '',
                 password: '',
-                captcha: '',
-                remember: false,
+                code: '',
             },
-            captcha_url: false,
-            captcha_prefix: '',
             rules: {
                 account: [
-                    {required: true, message: '请输入账号', trigger: 'blur'},
+                    { required: true, message: '请输入账号', trigger: 'blur' },
                 ],
                 password: [
-                    {required: true, message: '请输入密码', trigger: 'blur'},
+                    { required: true, message: '请输入密码', trigger: 'blur' },
+                ],
+                code: [
+                    { required: true, message: '请输入图形验证码', trigger: 'blur' },
                 ],
             },
             isBtnLoading: false,
@@ -70,42 +87,31 @@ export default {
     },
     watch: {},
     methods: {
-        refreshCaptchaUrl() {
-            this.captcha_url = `${this.captcha_prefix}?t=${Date.now()}`;
-        },
-        fetchLogin() {
-            if (this.captcha_prefix.length > 0) {
-                this.refreshCaptchaUrl();
-            } else {
-                API.get('auth/login').then((res) => {
-                    if (res && Object.prototype.hasOwnProperty.call(res, 'captcha_url')) {
-                        this.captcha_prefix = res.captcha_url;
-                        this.refreshCaptchaUrl();
-                    } else {
-                        this.captcha_url = false;
-                    }
-                });
-            }
-        },
         login() {
-            if (this.captcha_url && this.form.captcha.length === 0) {
-                $ele.$message.error('验证码没输入');
-                return;
-            }
             this.$refs.form.validate((valid) => {
                 if (!valid) return;
                 this.isBtnLoading = true;
                 API.post('auth/login', this.form).then((res) => {
-                    this.$store.commit('setMy', res);
-                    this.$router.push('/');
-                }).catch(() => {
-                    this.fetchLogin();
-                }).finally(() => this.isBtnLoading = false);
+                    if (res && res.id) {
+                        this.$store.commit('setMy', res);
+                        this.$router.push('/');
+                    } else {
+                        $ele.$message.error('账号密码错误！');
+                    }
+                }).catch(err => {
+                    this.refreshCodeImg();
+                    $ele.$message.error(err.message);
+                }).finally(() => {
+                    this.isBtnLoading = false;
+                });
             });
+        },
+        refreshCodeImg() {
+            this.codeImg = `${API.base_url}../supplier/captcha?${Math.random()}`;
         },
     },
     mounted() {
-        this.fetchLogin();
+        this.refreshCodeImg();
     },
 };
 </script>
@@ -118,10 +124,27 @@ export default {
         justify-content: center;
         align-items: center;
         background: #e1e2e2;
+        text-align: left;
 
         .el-card {
             width: 100%;
             max-width: 400px;
+        }
+
+        .login-card-code {
+            width: 265px;
+            flex: 0 0 auto;
+        }
+
+
+        .login-code-image {
+            width: 83px;
+            height: 35px;
+            margin-left: 10px;
+        }
+
+        .login-card-btn {
+            margin-top: 10px;
         }
 
         .title {
@@ -133,8 +156,10 @@ export default {
             font-family: sans-serif;
         }
 
-        .el-button {
+        .el-button{
             width: 100%;
+            height: 42px;
+            font-size: 14px;
         }
     }
 </style>

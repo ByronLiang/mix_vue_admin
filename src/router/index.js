@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import App from '../App.vue';
 
 Vue.use(VueRouter);
 
@@ -40,21 +41,41 @@ export default new VueRouter({
                         title: '信息面板',
                     },
                 },
-                // {
-                //     name: 'ChildrenDemo',
-                //     path: 'children-demo',
-                //     component: DefaultIndex,
-                //     children: require('./ChildrenDemo').default,
-                // },
+
+                {
+                    name: 'Example',
+                    path: 'example',
+                    meta: {
+                        title: '示例',
+                    },
+                    redirect: {
+                        name: 'Example.List',
+                    },
+                    component: App,
+                    children: [
+                        {
+                            name: 'Example.List',
+                            path: 'list',
+                            title: '示例列表页',
+                            meta: {
+                                title: '示例列表页',
+                            },
+                            component: lazyLoading('Example/List'),
+                        },
+                        {
+                            name: 'Example.Form',
+                            path: 'form/:id?',
+                            title: '示例详情页',
+                            component: lazyLoading('Example/Form'),
+                        },
+                    ],
+                },
                 {
                     name: 'MyProfile',
                     path: 'my-profile',
                     component: lazyLoading('MyProfile'),
                 },
             ],
-        }, {
-            path: '/bootstrap/basic',
-            component: lazyLoading('BootstrapView/Basic'),
         }, {
             path: '*',
             redirect: '/',

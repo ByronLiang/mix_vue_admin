@@ -1,7 +1,9 @@
-import imgHandle from './imgHandle';
+/* eslint-disable  */
+import ImageToBlob from './imgHandle';
+import { uploadToken } from '../api/Cache';
 
 export default class {
-    constructor(uploadBasePath = '', drive = 'cos') {
+    constructor(uploadBasePath = '', drive = 'oss') {
         this.uploadBasePath = uploadBasePath;
         this.drive = drive;
     }
@@ -46,12 +48,12 @@ export default class {
     /**
      * 获取上传参数
      * @param drive
-     * @returns {Promise<*>}
+     * @return {Promise<*>}
      */
     uploadParameter(drive = null) {
         if (drive) this.drive = drive;
-        // return uploadToken(this.drive);
-        throw Error('缺失获取上传参数配置');
+        return uploadToken(this.drive);
+        // throw Error('缺失获取上传参数配置');
     }
 
     /**
@@ -60,9 +62,9 @@ export default class {
      * @return {*}
      */
     handleUploadParameter(parameter) {
-        if (parameter.access_url.substr(parameter.access_url.length - 1, 1) !== '/') {
-            parameter.access_url += '/';
-        }
+        // if (parameter.access_url.substr(parameter.access_url.length - 1, 1) !== '/') {
+        //     parameter.access_url += '/';
+        // }
 
         if (!this.ajaxOptions) this.ajaxOptions = {};
         if (!(this.ajaxOptions.headers instanceof Object)) this.ajaxOptions.headers = {};
@@ -74,7 +76,7 @@ export default class {
     /**
      * 开始批量上传
      * @param files
-     * @returns {Promise<Array>}
+     * @return {Promise<Array>}
      */
     async uploadStart(files) {
         if (files) files = this.fileToFiles(files);
@@ -89,31 +91,38 @@ export default class {
     /**
      * 上传单个文件
      * @param file
-     * @returns {Promise<*>}
+     * @return {Promise<*>}
      */
     async uploadFile(file) {
         let uploadPath = this.uploadBasePath;
         const uploadParameter = this.handleUploadParameter(await this.uploadParameter());
         const uploadForm = uploadParameter.form;
-
         if (this.imgOptions) {
-            file = await imgHandle(file, this.imgOptions);
+            file = await ImageToBlob(file, this.imgOptions);
         }
 
         const filename = this.genFileName(file);
         uploadPath += filename;
 
         const formData = new FormData();
-        formData.append('key', uploadPath);
+
+        // formData.append('key', uploadPath);
+
+        console.log(uploadForm);
+
         for (const key in uploadForm) {
             if (!{}.hasOwnProperty.call(uploadForm, key)) continue;
-            formData.append(key, uploadForm[key]);
+            if (key === 'file') formData.append(key, file);
+            else formData.append(key, uploadForm[key]);
         }
-        formData.append('file', file, filename);
+        // formData.append('file', file, filename);
 
         await axios.post(uploadParameter.upload_url, formData, this.ajaxOptions);
 
-        return uploadParameter.access_url + uploadPath;
+        console.log('uploadParameter', uploadParameter);
+
+        // return uploadParameter.access_url + uploadPath;
+        return uploadParameter.access_url;
     }
 
     /**

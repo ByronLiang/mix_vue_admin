@@ -14,7 +14,7 @@
                 <el-submenu :index="route.name" :key="index">
                     <template slot="title">
                         <i :class="route.meta.ico || 'fa fa-list-ul'" aria-hidden="true"></i>
-                        <span>{{route.meta.title}}</span>
+                        <span class="ml-2">{{route.meta.title}}</span>
                     </template>
                     <el-menu-item v-for="(cRoute, cIndex) in route.children"
                                   :key="cIndex"
@@ -28,7 +28,7 @@
             <template v-if="!route.children">
                 <el-menu-item :index="route.name" :route="route" :key="index">
                     <i class="fa fa-list-ul" aria-hidden="true"></i>
-                    <span slot="title">{{route.meta.title}}</span>
+                    <span class="ml-2" slot="title">{{route.meta.title}}</span>
                 </el-menu-item>
             </template>
         </template>

@@ -1,9 +1,9 @@
 ## 配置
 ```sh
 # 复制一份环境变量
-cp .env .env.local
+cp .env .env.development.local
 ```
-- 本地修改`.env.local`的`BASE_URL`来切换代理服务器
+- 本地修改`.env.development.local`的`BASE_URL`来切换代理服务器，注意最后需带斜杠`/`
 
 ## 运行前端开发环境命令
 
@@ -12,7 +12,7 @@ cp .env .env.local
 npm i
 
 # 开启本地服务并实时编译
-npm run serve
+npm run local
 
 # 生产模式编译
 npm run build
@@ -21,7 +21,7 @@ npm run build
 npm run lint
 ```
 
-# 安装 vue-cli 插件
+# 安装 vue-cli 插件（不强制安装）
 
 `npx @vue/cli add xxxx`
 
